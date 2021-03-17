@@ -29,7 +29,11 @@ ghc-options:
 - -Wall -fno-warn-type-defaults
 
 dependencies:
-- base >= 4.7 && < 5
+- base >= 4.9 && < 5
+- random
+- codeworld-api == 0.3.1
+- text
+
 
 library:
   source-dirs: src

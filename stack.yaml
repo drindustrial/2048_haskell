@@ -10,14 +10,14 @@
 #
 # resolver: lts-3.5
 # resolver: nightly-2015-09-21
-# resolver: ghc-7.10.2
+resolver: ghc-8.6.4
 #
 # The location of a snapshot can be provided as a file or url. Stack assumes
 # a snapshot provided as a file might change, whereas a url resource does not.
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver: lts-17.0
+resolver: lts-13.19
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -29,12 +29,38 @@ resolver: lts-17.0
 #   - auto-update
 #   - wai
 packages:
-- .
+# - codeworld-api-0.3.1
+# - blank-canvas-0.6
+# - ghc-prim-0.5.3
+# - time-1.8.0.4
+# - directory-1.2.2.0
+# - containers-0.6.2.1
+# - bytestring-0.10.6.0
+# - binary-0.8.7.0
+# - Win32-2.5.3.0
+# - hashable-1.1.2.5
+# - process-1.2.0.0
+# - filepath-1.3.0.2
+# - deepseq-1.3.0.2
+# - base-4.8.0.0
+
+
 # Dependency packages to be pulled from upstream that are not in the resolver.
 # These entries can reference officially published versions as well as
 # forks / in-progress versions pinned to a git hash. For example:
 #
-# extra-deps:
+extra-deps:
+- codeworld-api-0.3.1@sha256:8cc06c1b13dd4c6e547b1e57b896c037d38776c6af571cfaeabc44d89b1c713b,2489
+- blank-canvas-0.6.3@sha256:9c089fd7796e07e428f3490b3812c92fec8d3b615b12c80db7f282b5d6eeec95,7669
+- kansas-comet-0.4@sha256:72330f1953abed85fc306ace742d975296a3b3a806c9db90dc793161b60c2846,1737
+# - array-0.5.4.0@sha256:2b2425e01d592c0e66594c008405ea4c6f6e4d929daeddabbd81be9bb49ebffa,1588
+# - ghc-boot-th-8.6.5@sha256:c120f0d15944e770e2b698f5139f0003a86f9e25e5d1a7c6631e442129232748,1075
+#- ghc-prim-0.3.1.0@sha256:a1f8f9edbc278aa149d32bd32ace34a8c295b3b2dbd5aaa3bfc5a4ad9835da43,1609
+# - integer-simple-0.1.1.1@sha256:edfa49fb19eb8e14ce4e0edd03327f13dfb71d186295df9f8dcd4ca59321c0a8,1002
+# - kansas-comet-0.4@sha256:72330f1953abed85fc306ace742d975296a3b3a806c9db90dc793161b60c2846,1737
+# - pretty-1.1.3.6@sha256:e16ffc733e816cfc09e99cc7f2398805f1f4c872d238a6b81668b5527284b382,2482
+# - transformers-0.5.6.2@sha256:6c959d14430f4deffb99579ba019de07c3d852a2122b6f449344386c7d75ff1d,3172
+# - ghc-prim-0.4.0.0@sha256:9261233fc5ec2ba22dd7a53019c52858c3fe453fb4ce7020b9e9ee6db02611d5,1554
 # - acme-missiles-0.3
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
