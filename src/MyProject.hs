@@ -193,7 +193,12 @@ render board = (drawBoard board) <> printScore board
 
 
 -- solver
---temp
+data Move = MoveLeft | MoveRight | MoveUp | MoveDown
+	deriving (Show)
+
+allMoves :: [Move]
+allMoves = [MoveLeft, MoveRight, MoveUp, MoveDown]
+
 addOrNot' :: Board -> Board -> Maybe [Int]
 addOrNot' board1 board2
   | board1 == board2 = Nothing
@@ -206,6 +211,8 @@ takeTurn move board1d = nboard1d
           b = maybe board2d (`slide` board2d) $ Just (moveToDir move)
           nboard2d = addOrNot board2d b
           nboard1d = addOrNot' board2d b
+
+
 
 -- /temp
 
