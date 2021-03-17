@@ -33,6 +33,7 @@ dependencies:
 - random
 - codeworld-api == 0.3.1
 - text
+- time
 
 
 library:

@@ -1,7 +1,7 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -Wall #-}
 {-# OPTIONS_GHC -Wall -fno-warn-type-defaults #-}
 {-# OPTIONS_GHC -fdefer-typed-holes -fshow-hole-constraints -funclutter-valid-hole-fits #-}
-{-# LANGUAGE OverloadedStrings #-}
 
 module MyProject where
 
@@ -12,10 +12,15 @@ import CodeWorld
 import Data.String  
 import Data.Text     (singleton)
 import Data.Maybe 
+import Data.Time
+import Data.List
+import Data.Ord
+import Control.Monad
 
 -- Each inner list is a row, starting with the top row
 -- A 0 is an empty tile
 type Board = [[Int]]
+
 
 data Direction = North | East | South | West
 
@@ -64,8 +69,8 @@ sumBoard = sum . map sum
   
 tOr4 :: Int -> Int
 tOr4 p 
-  | p == 1    = 512
-  | otherwise = 16
+  | p == 1    = 4
+  | otherwise = 2
 -- Adds a tile to a random empty spot.
 -- 90% of the time the tile is a 2, 10% of the time it is a 4 
 addTile :: Board -> Board
@@ -84,8 +89,28 @@ addOrNot origBoard afterMBoard
   | origBoard == afterMBoard = origBoard
   | otherwise                = addTile afterMBoard
   
+  
+oneToTwo :: [Int] -> [[Int]]
+oneToTwo [] = []
+oneToTwo board1 = (take 4 board1: oneToTwo (drop 4 board1))
+ 
+ -- data Move = MoveLeft | MoveRight | MoveUp | MoveDown
+ -- data Direction = North | East | South | West
+ 
+moveToDir :: Move -> Direction
+moveToDir MoveLeft = West
+moveToDir MoveRight = East
+moveToDir MoveUp = North
+moveToDir MoveDown = South
+
 --henler
 gameHandler :: Event -> Board -> Board
+gameHandler (KeyPress "B") board = nb
+  where
+    bMove = bestMove 5 (concat board)
+    b = maybe board (`slide` board) $ Just (moveToDir bMove)
+    nb = addOrNot board b
+    
 gameHandler (KeyPress c) board = b1
   where 
     b = maybe board (`slide` board) $ lookup c $ zip ["W","A","S","D"] [North, West, South, East]
@@ -166,5 +191,54 @@ printScore board = translated (-4) 6 (strToPic "Score:") <> translated 0 6 (strT
 render :: Board -> Picture
 render board = (drawBoard board) <> printScore board
 
-game :: IO ()
+
+-- solver
+--temp
+addOrNot' :: Board -> Board -> Maybe [Int]
+addOrNot' board1 board2
+  | board1 == board2 = Nothing
+  | otherwise        = Just (concat (addOrNot board1 board2))
+
+takeTurn :: Move -> [Int] -> Maybe [Int]
+takeTurn move board1d = nboard1d
+        where 
+          board2d = oneToTwo board1d
+          b = maybe board2d (`slide` board2d) $ Just (moveToDir move)
+          nboard2d = addOrNot board2d b
+          nboard1d = addOrNot' board2d b
+
+-- /temp
+
+-- Return the best move
+-- Will throw an error if there are no valid moves
+bestMove :: Int -> [Int] -> Move
+bestMove depth grid 	= snd bestValueMove
+	where 
+		valueMoves	 	= [ (value, move) |
+							move	<- allMoves,
+							newGrid <- [ takeTurn move grid ],
+							value 	<- [ gridValue depth (fromJust newGrid) ],
+							newGrid	/= Nothing ]
+		bestValueMove 	= maximumBy (comparing fst) valueMoves
+-- <<< I decided not to return Nothing on a dead end, because then we can no longer
+-- distinguish dead ends at different depths from eachother. >>>
+--
+-- Return the value of the grid,
+-- + 1 for each depth traversed
+-- -100 if a Game Over position is reached
+gridValue :: Int -> [Int] -> Int
+gridValue depth grid
+	| depth == 0		= length $ filter (==0) grid
+	| values == [] 	= -100
+	| otherwise 		= maximum values
+	where
+		values 			= [ value | 
+							move	<- allMoves,
+							newGrid	<- [ takeTurn move grid ],
+							value 	<- [ gridValue (depth-1) (fromJust newGrid) + 1],
+							newGrid /= Nothing ]
+
+
+-- /solver
+game :: IO()
 game = activityOf (addTile (replicate 4 (replicate 4 0))) gameHandler render
