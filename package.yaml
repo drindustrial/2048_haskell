@@ -1,9 +1,9 @@
-name:                my-project
+name:                haskell2048
 version:             0.1.0.0
-github:              "iu-haskell-spring-2021/project-template"
+github:              "2048-haskell"
 license:             BSD3
-author:              "Nikolai Kudasov"
-maintainer:          "n.kudasov@innopolis.ru"
+author:              "Denis Fokin, Roman Garaev"
+maintainer:          "d.fokin@innopolis.university"
 copyright:           "2021 Innopolis University"
 
 extra-source-files:
@@ -40,7 +40,7 @@ library:
   source-dirs: src
 
 executables:
-  my-project-exe:
+  2048hasekll:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
@@ -48,7 +48,7 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - my-project
+    - haskell2048
 
 tests:
   spec:
@@ -59,7 +59,7 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - my-project
+    - haskell2048
     - hspec
     - HUnit
     - QuickCheck
