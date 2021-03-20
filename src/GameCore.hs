@@ -58,30 +58,31 @@ emptyTiles = concatMap (uncurry search) . zip [0..3]
   where search n = zip (replicate 4 n) . elemIndices 0
 
 -- Given a point, update replaces the value at the point on the board with the given value
-updateTile :: (Int, Int) -> Int -> Board -> Board
-updateTile (rowI, columnI) value = updateIndex (updateIndex (const value) columnI) rowI
-  where updateIndex fn i list = take i list ++ fn (head $ drop i list) : tail (drop i list)
+updateBoard :: (Int, Int) -> Int -> Board -> Board
+updateBoard (rowI, columnI) value = updateIndex (updateIndex (const value) columnI) rowI
+  where updateIndex fn i list = take i list ++ fn (list !! max 0 i) : tail (drop i list) -- (head $ drop i list)
 
 sumBoard :: Board -> Int
 sumBoard = sum . map sum
   
-tOr4 :: Int -> Int
-tOr4 p 
+-- 90% of the time the tile is a 2, 10% of the time it is a 4 
+valueForProb :: Int -> Int
+valueForProb p 
   | p == 1    = 4
   | otherwise = 2
 -- Adds a tile to a random empty spot.
--- 90% of the time the tile is a 2, 10% of the time it is a 4 
+
 addTile :: Board -> Board
-addTile b = updateTile newPoint newValue b
+addTile b = updateBoard newPoint newValue b
  where
   tiles = emptyTiles b
   g = mkStdGen (sumBoard b * 57)
   (ind, nextg) = randomR (0, length tiles - 1) g -- >>= return . (tiles !!)
   newPoint = fromJust (lookup ind $ zip [0, 1 ..] tiles)
   (newValueP, _) = randomR (1, 10 :: Int) nextg-- (randomR (1, 10 :: Int) g) >>= return . \x -> if x == 1 then 4 else 2
-  newValue = tOr4 newValueP
+  newValue = valueForProb newValueP
 
-
+-- add tile if voard was cnhaged after move 
 addOrNot :: Board -> Board -> Board
 addOrNot origBoard afterMBoard
   | origBoard == afterMBoard = origBoard
@@ -101,26 +102,11 @@ moveToDir MoveRight = MoveRight
 moveToDir MoveUp = MoveUp
 moveToDir MoveDown = MoveDown
 
---henler
-gameHandler :: Event -> Board -> Board
-gameHandler (KeyPress "B") board = nb
-  where
-    bMove = bestMove 6 (concat board)
-    b = maybe board (`slide` board) $ Just (moveToDir bMove)
-    nb = addOrNot board b
-    
-gameHandler (KeyPress c) board = b1
-  where 
-    b = maybe board (`slide` board) $ lookup c $ [("W",MoveUp),("A",MoveLeft),("S",MoveDown),("D",MoveRight)] -- [MoveUp, MoveLeft, MoveDown, MoveRight]
-    b1 = addOrNot board b
-
-gameHandler _ board = board
-
-
 addOrNot' :: Board -> Board -> Maybe [Int]
 addOrNot' board1 board2
   | board1 == board2 = Nothing
   | otherwise        = Just (concat (addOrNot board1 board2))
+
 
 takeTurn :: Move -> [Int] -> Maybe [Int]
 takeTurn move board1d = nboard1d
@@ -131,11 +117,7 @@ takeTurn move board1d = nboard1d
           nboard1d = addOrNot' board2d b
 
 
-
--- /temp
-
 -- Return the best move
--- Will throw an error if there are no valid moves
 bestMove :: Int -> [Int] -> Move
 bestMove depth grid = snd bestValueMove
 	where 
@@ -145,9 +127,7 @@ bestMove depth grid = snd bestValueMove
                             newGrid	/= Nothing,
 							value 	<- [ gridValue depth (fromJust newGrid) ]]
 		bestValueMove 	= maximumBy (comparing fst) valueMoves
--- <<< I decided not to return Nothing on a dead end, because then we can no longer
--- distinguish dead ends at different depths from eachother. >>>
---
+
 -- Return the value of the grid,
 -- + 1 for each depth traversed
 -- -100 if a Game Over position is reached
@@ -162,3 +142,19 @@ gridValue depth grid
 							newGrid	<- [ takeTurn move grid ],
                             newGrid /= Nothing,
 							value 	<- [ gridValue (depth-1) (fromJust newGrid) + 1]]
+
+
+--henler
+gameHandler :: Event -> Board -> Board
+gameHandler (KeyPress "B") board = nb
+  where
+    bMove = bestMove 5 (concat board)
+    b = maybe board (`slide` board) $ Just (moveToDir bMove)
+    nb = addOrNot board b
+    
+gameHandler (KeyPress c) board = b1
+  where 
+    b = maybe board (`slide` board) $ lookup c $ [("W",MoveUp),("A",MoveLeft),("S",MoveDown),("D",MoveRight)] -- [MoveUp, MoveLeft, MoveDown, MoveRight]
+    b1 = addOrNot board b
+
+gameHandler _ board = board
