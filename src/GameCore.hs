@@ -22,6 +22,8 @@ data Move = MoveUp | MoveRight | MoveDown | MoveLeft
 allMoves :: [Move]
 allMoves = [MoveLeft, MoveRight, MoveUp, MoveDown]
 
+-- Move all tiles to the possible left position;
+-- base function for all moves
 slideLeft :: Board -> Board
 slideLeft = map slideRow
   where slideRow [ ] = [ ]
@@ -32,6 +34,8 @@ slideLeft = map slideRow
           | x == y = (x + y) : slideRow zs ++ [0]
           | otherwise = x : slideRow (y : zs)
 
+-- Moving of board in arbitary direction
+-- utilize slideLeft and transposed board 
 slide :: Move -> Board -> Board
 slide MoveUp = transpose . slideLeft . transpose
 slide MoveRight  = map reverse . slideLeft . map reverse
@@ -40,7 +44,7 @@ slide MoveLeft  = slideLeft
 
 -- Tells us if the player won the game by getting a 2048 tile
 completed :: Board -> Bool
-completed b = any (elem 2048) b
+completed = any (elem 2048) 
 
 -- Tells us if the game is over because there are no valid moves left
 stalled :: Board -> Bool
@@ -70,8 +74,8 @@ valueForProb :: Int -> Int
 valueForProb p 
   | p == 1    = 4
   | otherwise = 2
--- Adds a tile to a random empty spot.
 
+-- Adds a tile to a random empty spot.
 addTile :: Board -> Board
 addTile b = updateBoard newPoint newValue b
  where
@@ -88,7 +92,8 @@ addOrNot origBoard afterMBoard
   | origBoard == afterMBoard = origBoard
   | otherwise                = addTile afterMBoard
   
-  
+
+-- Change the dimensionality of board
 oneToTwo :: [Int] -> [[Int]]
 oneToTwo [] = []
 oneToTwo board1 = take 4 board1: oneToTwo (drop 4 board1)
@@ -96,11 +101,11 @@ oneToTwo board1 = take 4 board1: oneToTwo (drop 4 board1)
  -- data Move = MoveLeft | MoveRight | MoveUp | MoveDown
  -- data Move = MoveUp | MoveRight | MoveDown | MoveLeft
  
-moveToDir :: Move -> Move
-moveToDir MoveLeft = MoveLeft
-moveToDir MoveRight = MoveRight
-moveToDir MoveUp = MoveUp
-moveToDir MoveDown = MoveDown
+--moveToDir :: Move -> Move
+--moveToDir MoveLeft = MoveLeft
+--moveToDir MoveRight = MoveRight
+--moveToDir MoveUp = MoveUp
+--moveToDir MoveDown = MoveDown
 
 addOrNot' :: Board -> Board -> Maybe [Int]
 addOrNot' board1 board2
@@ -112,11 +117,11 @@ takeTurn :: Move -> [Int] -> Maybe [Int]
 takeTurn move board1d = nboard1d
         where 
           board2d = oneToTwo board1d
-          b = maybe board2d (`slide` board2d) $ Just (moveToDir move)
+          b = maybe board2d (`slide` board2d) $ Just move
           -- nboard2d = addOrNot board2d b
           nboard1d = addOrNot' board2d b
 
-
+-- solver
 -- Return the best move
 bestMove :: Int -> [Int] -> Move
 bestMove depth grid = snd bestValueMove
@@ -144,17 +149,18 @@ gridValue depth grid
 							value 	<- [ gridValue (depth-1) (fromJust newGrid) + 1]]
 
 
---henler
+-- handler
 gameHandler :: Event -> Board -> Board
 gameHandler (KeyPress "B") board = nb
   where
     bMove = bestMove 5 (concat board)
-    b = maybe board (`slide` board) $ Just (moveToDir bMove)
+    b = maybe board (`slide` board) $ Just (bMove)
     nb = addOrNot board b
     
 gameHandler (KeyPress c) board = b1
   where 
     b = maybe board (`slide` board) $ lookup c $ [("W",MoveUp),("A",MoveLeft),("S",MoveDown),("D",MoveRight)] -- [MoveUp, MoveLeft, MoveDown, MoveRight]
     b1 = addOrNot board b
+
 
 gameHandler _ board = board

@@ -36,6 +36,7 @@ strToPic :: String -> Picture
 strToPic []         = blank
 strToPic (chr:chrs) = lettering (singleton chr) <>  translated 0.5 0 (strToPic chrs)
 
+
 getColor :: Mark -> Color
 getColor 0    = translucent yellow
 getColor 2    = yellow
@@ -51,6 +52,7 @@ getColor 1024 = translucent purple
 getColor 2048 = orange
 getColor _    = black
 
+-- 
 drawMark :: Mark -> Picture
 drawMark n 
  | n == 0 = blank
@@ -98,9 +100,9 @@ sumScore = sum . map getScore . concat
 
 printScore :: Board -> Picture
 printScore board 
-  | stalled board == True = translated (-4) 6 (strToPic "You lose!")
-  | completed board == True = translated (-4) 6 (strToPic "You won!")
-  | otherwise = translated (-4) 6 (strToPic "Score:") <> translated 0 6 (strToPic ( show (sumScore board)))
+  | stalled board   = translated (-4) 6 (strToPic "You lose!")
+  | completed board = translated (-4) 6 (strToPic "You won!")
+  | otherwise       = translated (-4) 6 (strToPic "Score:") <> translated 0 6 (strToPic ( show (sumScore board)))
 
 render :: Board -> Picture
 render board = drawBoard board <> printScore board
