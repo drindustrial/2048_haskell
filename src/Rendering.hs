@@ -87,12 +87,12 @@ drawBoard board = drawBoardAll [-6, -3 ..] [3, 0 ..] board
 
 getScore :: Int -> Int
 getScore x
-  | x >= 4096 = x * 2
-  | x == 2048 = 4000
-  | x == 1024 = 1800
-  | x == 512 = 700
-  | x == 256 = 360
-  | x == 128 = 160
+  | x >= 4096 = 160000 + x * 2
+  | x == 2048 = 80000
+  | x == 1024 = 29000
+  | x == 512 = 8000
+  | x == 256 = 1800
+  | x == 128 = 500
   |otherwise = x
 
 sumScore :: Board -> Int
@@ -100,8 +100,8 @@ sumScore = sum . map getScore . concat
 
 printScore :: Board -> Picture
 printScore board 
-  | stalled board   = translated (-4) 6 (strToPic "You lose!")
-  | completed board = translated (-4) 6 (strToPic "You won!")
+  | completed board = translated (-7) 6 (strToPic "You won!") <> translated (-1) 6 (strToPic "Score:") <> translated 3 6 (strToPic ( show (sumScore board)))
+  | stalled board   = translated (-7) 6 (strToPic "You lose!") <> translated (-1) 6 (strToPic "Score:") <> translated 3 6 (strToPic ( show (sumScore board)))
   | otherwise       = translated (-4) 6 (strToPic "Score:") <> translated 0 6 (strToPic ( show (sumScore board)))
 
 render :: Board -> Picture

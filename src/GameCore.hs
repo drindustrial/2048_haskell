@@ -42,9 +42,9 @@ slide MoveRight  = map reverse . slideLeft . map reverse
 slide MoveDown = transpose . map reverse . slideLeft . map reverse . transpose
 slide MoveLeft  = slideLeft
 
--- Tells us if the player won the game by getting a 2048 tile
+-- Return True if player got tile >= 2048
 completed :: Board -> Bool
-completed = any (elem 2048) 
+completed = any (>= 2048) . concat
 
 -- Tells us if the game is over because there are no valid moves left
 stalled :: Board -> Bool

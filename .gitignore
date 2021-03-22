@@ -1,4 +1,5 @@
 .stack-work/
+.vscode
 my-project.cabal
 *~
 dist
