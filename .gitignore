@@ -1,6 +1,6 @@
 .stack-work/
 .vscode
-my-project.cabal
+haskell2048.cabal
 *~
 dist
 dist-*
