@@ -11,6 +11,8 @@ import CodeWorld ( Event(KeyPress) )
 import Data.Maybe ( fromJust ) 
 import Data.Ord ( comparing )
 
+size :: Int
+size = 4
 
 type Board = [[Int]]
 
@@ -58,8 +60,8 @@ stalled b = all stalled' b && all stalled' (transpose b)
 
 -- Returns tuples of the indices of all of the empty tiles
 emptyTiles :: Board -> [(Int, Int)]
-emptyTiles = concatMap (uncurry search) . zip [0..3]
-  where search n = zip (replicate 4 n) . elemIndices 0
+emptyTiles = concatMap (uncurry search) . zip [0..(size - 1)]
+  where search n = zip (replicate size n) . elemIndices 0
 
 -- Given a point, update replaces the value at the point on the board with the given value
 updateBoard :: (Int, Int) -> Int -> Board -> Board
@@ -96,7 +98,7 @@ addOrNot origBoard afterMBoard
 -- Change the dimensionality of board
 oneToTwo :: [Int] -> [[Int]]
 oneToTwo [] = []
-oneToTwo board1 = take 4 board1: oneToTwo (drop 4 board1)
+oneToTwo board1 = take size board1: oneToTwo (drop size board1)
  
 
 addOrNot' :: Board -> Board -> Maybe [Int]
@@ -125,7 +127,7 @@ bestMove depth grid = snd bestValueMove
 							value 	<- [ gridValue depth (fromJust newGrid) ]]
 		bestValueMove 	= maximumBy (comparing fst) valueMoves
 
--- Return the value of the grid,
+-- Return the value of the board,
 -- + 1 for each depth traversed
 -- -100 if a Game Over position is reached
 gridValue :: Int -> [Int] -> Int
