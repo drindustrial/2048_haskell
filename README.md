@@ -1,9 +1,8 @@
-# project-template
+# 2048 on Haskell
 
 [![Build Status](https://travis-ci.org/iu-haskell-spring-2020/project-template.svg?branch=master)](https://travis-ci.org/iu-haskell-spring-2020/project-template)
 
-Template for a Haskell project.
-
+This is an implementation of [2048 game](https://github.com/gabrielecirulli/2048) on Haskell. To move a field press W-A-S-D; to get the next best move, calculated by computer, press "B".
 ### Prerequisites
 
 This project relies on the [Haskell Stack tool](https://docs.haskellstack.org/en/stable/README/).
