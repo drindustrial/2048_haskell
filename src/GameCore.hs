@@ -46,7 +46,7 @@ slide MoveLeft  = slideLeft
 completed :: Board -> Bool
 completed = any (>= 2048) . concat
 
--- Tells us if the game is over because there are no valid moves left
+-- Return True if there are no valid moves left
 stalled :: Board -> Bool
 stalled b = all stalled' b && all stalled' (transpose b)
   where stalled' row = notElem 0 row && noNeighbors row
@@ -98,14 +98,6 @@ oneToTwo :: [Int] -> [[Int]]
 oneToTwo [] = []
 oneToTwo board1 = take 4 board1: oneToTwo (drop 4 board1)
  
- -- data Move = MoveLeft | MoveRight | MoveUp | MoveDown
- -- data Move = MoveUp | MoveRight | MoveDown | MoveLeft
- 
---moveToDir :: Move -> Move
---moveToDir MoveLeft = MoveLeft
---moveToDir MoveRight = MoveRight
---moveToDir MoveUp = MoveUp
---moveToDir MoveDown = MoveDown
 
 addOrNot' :: Board -> Board -> Maybe [Int]
 addOrNot' board1 board2
