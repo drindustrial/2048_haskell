@@ -97,7 +97,10 @@ sumScore :: Board -> Int
 sumScore = sum . map getScore . concat
 
 printScore :: Board -> Picture
-printScore board = translated (-4) 6 (strToPic "Score:") <> translated 0 6 (strToPic ( show (sumScore board)))
+printScore board 
+  | stalled board == True = translated (-4) 6 (strToPic "You lose!")
+  | completed board == True = translated (-4) 6 (strToPic "You won!")
+  | otherwise = translated (-4) 6 (strToPic "Score:") <> translated 0 6 (strToPic ( show (sumScore board)))
 
 render :: Board -> Picture
 render board = drawBoard board <> printScore board
